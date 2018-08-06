@@ -1,0 +1,92 @@
+const initializeApp = require('../app');
+const SocketIO = require('socket.io');
+const initializeSocket = require('../api/socket');
+const debug = require('debug')('tweet-feed-api:server');
+const http = require('http');
+const Loki = require('lokijs');
+const {LokiFsAdapter} = require('lokijs');
+
+let db = new Loki('TweetFeed.db', {
+	adapter: new LokiFsAdapter(),
+	autosave: true
+});
+let port = normalizePort(process.env.PORT || '3000');
+
+db.loadDatabase({}, err => {
+	if (err) {
+		onError(err);
+	} else {
+		let app = initializeApp(db);
+		app.set('port', port);
+		const server = http.createServer(app);
+		const io = SocketIO(server);
+
+		initializeSocket(io, db);
+
+		server.listen(port);
+
+		server.on('error', onError);
+		server.on('listening', () => {
+			const address = server.address();
+			const bind = typeof address === 'string'
+				? 'pipe ' + address
+				: 'port ' + address.port;
+			debug('Listening on ' + bind);
+		});
+	}
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+	const port = parseInt(val, 10);
+
+	if (isNaN(port)) {
+		// named pipe
+		return val;
+	}
+
+	if (port >= 0) {
+		// port number
+		return port;
+	}
+
+	return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+	if (error.syscall !== 'listen') {
+		throw error;
+	}
+
+	const bind = typeof port === 'string'
+		? 'Pipe ' + port
+		: 'Port ' + port;
+
+	// handle specific listen errors with friendly messages
+	switch (error.code) {
+		case 'EACCES':
+			console.error(bind + ' requires elevated privileges');
+			process.exit(1);
+			break;
+		case 'EADDRINUSE':
+			console.error(bind + ' is already in use');
+			process.exit(1);
+			break;
+		default:
+			throw error;
+	}
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening(address) {
+}

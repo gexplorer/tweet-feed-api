@@ -1,0 +1,11 @@
+{
+  "TWITTER_CONSUMER_KEY": "",
+  "TWITTER_CONSUMER_SECRET": "",
+  "TWITTER_ACCESS_TOKEN": "",
+  "TWITTER_ACCESS_TOKEN_SECRET": "",
+  "TWITTER_STREAM_ENDPOINT": "statuses/filter",
+  "TWITTER_PARAMS": {
+    "track": "#twitter",
+    "filter_level": "low"
+  }
+}
