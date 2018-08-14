@@ -1,32 +1,50 @@
 {
   "name": "tweet-feed-api",
-  "version": "0.0.0",
-  "private": true,
+  "description": "",
+  "version": "1.0.0",
+  "homepage": "",
+  "main": "src",
+  "keywords": [],
+  "author": {
+    "name": "Eder Elorriaga",
+    "email": "gexplorer8@gmail.com"
+  },
+  "contributors": [],
+  "bugs": {},
+  "directories": {
+    "lib": "src",
+    "test": "test/"
+  },
+  "engines": {
+    "node": "^8.0.0",
+    "yarn": ">= 0.18.0"
+  },
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "yarn run eslint && yarn run mocha",
+    "eslint": "eslint src/. test/. --config .eslintrc.json",
+    "start": "node src/",
+    "mocha": "mocha test/ --recursive --exit"
   },
   "dependencies": {
-    "@types/express": "^4.16.0",
-    "@types/lokijs": "^1.5.2",
-    "@types/nconf": "^0.0.37",
-    "@types/socket.io": "^1.4.36",
-    "@types/twit": "^2.2.15",
-    "cookie-parser": "~1.4.3",
-    "debug": "~2.6.9",
+    "@feathersjs/configuration": "^2.0.0",
+    "@feathersjs/errors": "^3.3.0",
+    "@feathersjs/express": "^1.2.3",
+    "@feathersjs/feathers": "^3.1.7",
+    "@feathersjs/socketio": "^3.2.2",
+    "compression": "^1.7.3",
+    "cors": "^2.8.4",
+    "feathers-nedb": "^3.1.0",
+    "helmet": "^3.13.0",
+    "nedb": "^1.8.0",
+    "rxjs": "^6.2.2",
+    "serve-favicon": "^2.5.0",
+    "twit": "^2.2.11",
+    "winston": "^3.0.0"
+  },
+  "devDependencies": {
     "eslint": "^5.3.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.2",
-    "express": "~4.16.0",
-    "hbs": "~4.0.1",
-    "http-errors": "~1.6.2",
-    "lokijs": "^1.5.5",
-    "moment": "^2.22.2",
-    "morgan": "~1.9.0",
-    "nconf": "^0.10.0",
-    "node-sass-middleware": "0.11.0",
-    "prettier": "^1.14.0",
-    "rxjs": "^6.2.1",
-    "socket.io": "^2.1.1",
-    "twit": "^2.2.11"
+    "mocha": "^5.2.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
   }
 }
