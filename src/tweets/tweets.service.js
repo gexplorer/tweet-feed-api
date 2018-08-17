@@ -1,8 +1,8 @@
 const createService = require('feathers-nedb');
 const createModel = require('./tweets.model');
 const hooks = require('./tweets.hooks');
-const createTwitStream = require('./twit.stream');
 const config = require('./twit.config');
+const createTwitStream = require('./twit.stream');
 
 module.exports = function (app) {
   const Model = createModel(app);
@@ -12,13 +12,17 @@ module.exports = function (app) {
   };
   app.use('/tweets', createService(options));
 
-  const tweetStream = createTwitStream(config);
-
   const service = app.service('tweets');
 
-  tweetStream
+  createTwitStream(config)
     .subscribe(tweet => {
-      service.create(tweet);
+      service
+        .find({ query: { id: tweet.id } })
+        .then((tweets) => {
+          if (tweets.length === 0){
+            service.create(tweet);
+          }
+        });
     });
 
   service.hooks(hooks);

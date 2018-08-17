@@ -1,6 +1,7 @@
 const Twit = require('twit');
 const Rx = require('rxjs');
 const { filter, map } = require('rxjs/operators');
+const transformTweetData = require('./twit.utils');
 
 module.exports = function(config) {
   const configKeys = {
@@ -12,34 +13,18 @@ module.exports = function(config) {
   const streamEndpoint = config['TWITTER_STREAM_ENDPOINT'];
   const params = config['TWITTER_PARAMS'];
   const twitter = new Twit(configKeys);
+  const history = twitter.get('search/tweets', {q: '#trikileaks'});
   const stream = twitter.stream(streamEndpoint, params);
 
-  return Rx.fromEvent(stream, 'tweet')
+  return Rx.Observable
+    .create((observer) => {
+      history.then((response) => {
+        response.data.statuses
+          .forEach((status) => observer.next(status));
+      });
+
+      stream.on('tweet', (status) => observer.next(status));
+    })
     .pipe(filter(status => !status.retweeted_status))
     .pipe(map(transformTweetData));
 };
-
-function transformTweetData(status) {
-  let text = status.text;
-  if (status.hasOwnProperty('extended_tweet')) {
-    text = status.extended_tweet.full_text;
-  }
-
-  let photo = null;
-  if (status.hasOwnProperty('extended_entities')) {
-    let url = status.extended_entities.media
-      .filter(media => media.type === 'photo')
-      .map(media => media.media_url)[0];
-    photo = url || null;
-  }
-
-  return {
-    id: status.id,
-    username: status.user.screen_name,
-    avatar: status.user.profile_image_url,
-    name: status.user.name,
-    date: new Date(status.created_at),
-    text: text,
-    photo: photo,
-  };
-}
